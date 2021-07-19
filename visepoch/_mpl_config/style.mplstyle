@@ -1,0 +1,8 @@
+axes.prop_cycle: cycler('color', [(0.86, 0.3712, 0.3399999), (0.3399999999, 0.438799999, 0.86), (0.3399999, 0.86, 0.5012), (0.86, 0.33999999, 0.69879999), (0.339999, 0.8287999, 0.86), (0.63119999, 0.339999, 0.86), (0.5688, 0.86, 0.33999999)])
+
+figure.titlesize: 12
+xtick.labelsize: 8
+ytick.labelsize: 8
+axes.titlesize: 8
+axes.labelsize: 8
+legend.fontsize: 8
