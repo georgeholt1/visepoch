@@ -1,6 +1,6 @@
 # VISEPOCH
 
-A package for visualising [EPOCH](https://github.com/Warwick-Plasma/epoch) laser wakefield acceleration simulation results.
+A Python 3 package for visualising [EPOCH](https://github.com/Warwick-Plasma/epoch) laser wakefield acceleration simulation results.
 
 ## Installation
 - Clone this repository.
