@@ -160,3 +160,4 @@ cython_debug/
 build_env.sh
 envs/
 tests_dev/
+jupyter_notebooks_dev/

@@ -7,3 +7,5 @@
 ## [0.1.0]
 ### Added
 - Animated number density.
+- Static average electron energy.
+- Static total electron charge.

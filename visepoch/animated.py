@@ -1,10 +1,10 @@
 # Author: George K. Holt
 # License: MIT
-# Version: 0.0.1
+# Version: 0.1.0
 """
 Part of VISEPOCH.
 
-Contains methods for creating animations of the EPOCH data.
+Contains functions for creating animations of the EPOCH data.
 """
 import os
 import numpy as np
@@ -50,7 +50,7 @@ def animated_plasma_density(
     Parameters
     ----------
     sup_dir : str
-        Path to the simulation super directory. The simulations diags should be
+        Path to the simulation super directory. The simulation dumps should be
         in here.
     out_dir : str, optional
         Path to output directory within which to save the animation. Defaults to
