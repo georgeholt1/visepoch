@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="visepoch",
-    version="0.0.1",
+    version="0.1.0",
     author="George K. Holt",
     description="A package for visualising EPOCH results",
     long_description=long_description,
