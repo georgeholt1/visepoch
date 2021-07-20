@@ -9,7 +9,7 @@ Contains functions for creating static plots from the EPOCH data.
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.constants import e
+from scipy.constants import e, m_e, c
 
 import sdf
 
@@ -205,7 +205,7 @@ def plot_average_electron_energy(
     ax.set_xlim(t.min()/10.0**t_max_oom, t.max()/10.0**t_max_oom)
     ax.set_ylim(0, Ek_max_plot)
     ax.set_xlabel(r'$t$ ($\times$' + f'$10 ^ {{{t_max_oom}}}$' + ' s)')
-    ax.set_ylabel(r'$E$ ($\times$' + f'$10 ^ {{{Ek_max_plot_oom}}}$' + ' eV)')
+    ax.set_ylabel(r'$E_k$ ($\times$' + f'$10 ^ {{{Ek_max_plot_oom}}}$' + ' eV)')
     
     fig.tight_layout()
     
@@ -480,3 +480,185 @@ def plot_a0(
     
     
     
+def plot_electron_energy_spectrum(
+    sup_dir,
+    energy_bins=1000,
+    energy_units='gamma',
+    x_select=(None, None),
+    out_dir=None,
+    figsize=(8, 4.5),
+    dpi=200,
+):
+    '''Plot the energy spectrum of electrons in the subset.
+    
+    Parameters
+    ----------
+    sup_dir : str
+        Path to the simulation super directory. The simulation dumps shouyld be
+        in here.
+    energy_bins : int, optional
+        Number of bins to form the spectrum in energy. Defaults to 1000.
+    energy_units : str, optional
+        Units of energy to plot. Either 'gamma' (Lorentz factor) or 'eV'
+        (electron volts). Defaults to 'gamma'.
+    x_select : tuple, optional
+        2-tuple with float values specifying the x-position of particles to
+        sub-sample in SI relative window units (xmin, xmax). A value of None
+        sets the sub-sample to be the minimum of maximum x-border.
+        E.g. (5e-6, 20e-6) will sample the particles with position values
+        between 5 and 20 microns in the window units.
+        Defaults to (None, None), which performs no sub-sampling.
+    out_dir : str, optional
+        Path to output directory within which to save the plot. Defaults to
+        None, which saves to <sup_dir>/analysis/average_electron_energy/.
+    figsize : tuple, optional
+        Figure size in the form (width, height). Changing this parameter may
+        result in a bad plot layout. Defaults to (8, 4.5).
+    dpi : int, optional
+        Dots per inch resolution. Changing this parameter may result in a bad
+        plot layout. Defaults to 200.
+        
+    Input deck requirements
+    -----------------------
+    In addition to base requirements:
+        - A subset of the `electron` species called `high_gamma` (example
+          below).
+        - Particle positions, weights and energies dumped for the `high_gamma`
+          subset.
+    '''
+    # make output directory
+    if out_dir is None:
+        out_dir = os.path.join(sup_dir, "analysis", "electron_energy_spectrum")
+        print("Output directory not specified")
+        print(f"Defaulting to {out_dir}")
+    if not os.path.isdir(out_dir):
+        print(f"Making output directory at {out_dir}")
+        os.makedirs(out_dir)
+    
+    # get and order sdf files
+    sim_files = []
+    for file in os.listdir(sup_dir):
+        if file.endswith('.sdf'):
+            sim_files.append(file)
+    sim_files.sort()
+    
+    # initialise arrays
+    t = np.zeros(
+        (len(sim_files), ),
+        dtype=np.float64
+    )  # dump time stamps
+    spectrum = np.zeros(
+        (energy_bins, len(sim_files)),
+        dtype=np.float64
+    )  # the energy spectrum image-like
+    
+    # get maximum energy in simulation
+    Ek_max = 0
+    for f in sim_files:
+        data = sdf.read(os.path.join(sup_dir, f))
+        # if AttributeError occurs that means there are no particles in the
+        #   subset
+        try:
+            Ek_temp = data.Particles_Ek_subset_high_gamma_electron.data.max()
+        except AttributeError:
+            Ek_temp = 0
+        
+        if Ek_temp > Ek_max:
+            Ek_max = Ek_temp
+    
+    # histogram bin edges
+    bin_edges = np.linspace(0, Ek_max, energy_bins+1)
+    
+    # populate the energy spectrum image-like
+    for i, f in enumerate(sim_files):
+        data = sdf.read(os.path.join(sup_dir, f))
+        # if AttributeError occurs that means there are no particles in the
+        #   subset
+        try:
+            Ek_temp = data.Particles_Ek_subset_high_gamma_electron.data
+            w_temp = data.Particles_Weight_subset_high_gamma_electron.data
+            x_temp = data.Grid_Particles_subset_high_gamma_electron.data[0]
+            sub_sample = True
+            fill = True
+        except AttributeError:
+            fill = False
+            sub_sample = False
+        
+        # perform position-based sub-sampling if there are particles
+        if sub_sample:
+            # get x region for sub-sampling
+            grid = data.Grid_Grid.data
+            if x_select[0] is not None:
+                x_min_sample = grid[0].min() + x_select[0]
+            else:
+                x_min_sample = grid[0].min()
+            if x_select[1] is not None:
+                x_max_sample = grid[0].min() + x_select[1]
+            else:
+                x_max_sample = grid[0].max()
+            
+            # check sub-sample region if valid
+            if x_min_sample >= x_max_sample:
+                raise ValueError("Invalid x_select")
+
+            # perform sub-sample
+            arr_inds = np.where(
+                (x_temp<=x_max_sample) & (x_temp>=x_min_sample)
+            )
+            Ek_temp = Ek_temp[arr_inds]
+            w_temp = w_temp[arr_inds]
+            
+            # check there are still particles
+            if Ek_temp.size == 0:
+                fill = False
+        
+        if fill:
+            hist, _ = np.histogram(Ek_temp, bins=bin_edges, weights=w_temp)
+            spectrum[:, i] = hist
+            
+        t[i] = data.Header['time']
+    
+    # check there is data to plot
+    if spectrum.max() == 0:
+        print("No electrons found")
+        return
+    
+    if energy_units == 'gamma':
+        bin_edges_plot = bin_edges / m_e / c ** 2 + 1
+    elif energy_units == 'eV':
+        bin_edges_plot = bin_edges / 1.609e-19
+    else:
+        raise ValueError('Invalid energy_units')
+    
+    # normalise
+    spectrum *= e  # to charge
+    
+    # calculate some orders of magnitude    
+    t_max_oom = int(np.floor(np.log10(t.max())))
+    Ek_max_oom = int(np.floor(np.log10(bin_edges_plot.max())))
+    spectrum_max_oom = int(np.floor(np.log10(spectrum.max())))
+    
+    # plot
+    fig = plt.figure(figsize=figsize, dpi=dpi)
+    ax = fig.add_subplot()
+    im = ax.pcolormesh(
+        t/10.0**t_max_oom,
+        bin_edges_plot/10.0**Ek_max_oom,
+        spectrum,
+        shading='auto',
+        cmap='hot_r'
+    )
+    cbar = fig.colorbar(im)
+    ax.set_xlabel(r'$t$ ($\times$' + f'$10 ^ {{{t_max_oom}}}$' + ' s)')
+    if energy_units == 'gamma':
+        ax.set_ylabel(r'$\gamma$ ($\times$' + f'$10 ^ {{{Ek_max_oom}}}$' + ')')
+    elif energy_units == 'eV':
+        ax.set_ylabel(r'$E_k$ ($\times$' + f'$10 ^ {{{Ek_max_oom}}}$' + 
+                      ' eV)')
+    cbar.set_label(r'$q$ ($\times$' + f'$10 ^ {{{spectrum_max_oom}}}$' + ' C)')
+    
+    fig.tight_layout()
+    
+    plt.show()
+    
+    plt.close()
