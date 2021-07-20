@@ -225,7 +225,43 @@ def plot_charge(
     figsize=(8, 4.5),
     dpi=200
 ):
-    '''
+    '''Plot total charge of electron subset.
+    
+    Parameters
+    ----------
+    sup_dir : str
+        Path to the simulation super directory. The simulation dumps shouyld be
+        in here.
+    out_dir : str, optional
+        Path to output directory within which to save the plot. Defaults to
+        None, which saves to <sup_dir>/analysis/average_electron_energy/.
+    x_select : tuple, optional
+        2-tuple with float values specifying the x-position of particles to
+        sub-sample in SI relative window units (xmin, xmax). A value of None
+        sets the sub-sample to be the minimum of maximum x-border.
+        E.g. (5e-6, 20e-6) will sample the particles with position values
+        between 5 and 20 microns in the window units.
+        Defaults to (None, None), which performs no sub-sampling.
+    figsize : tuple, optional
+        Figure size in the form (width, height). Changing this parameter may
+        result in a bad plot layout. Defaults to (8, 4.5).
+    dpi : int, optional
+        Dots per inch resolution. Changing this parameter may result in a bad
+        plot layout. Defaults to 200.
+        
+    Input deck requirements
+    -----------------------
+    In addition to base requirements:
+        - A subset of the `electron` species called `high_gamma` (example
+          below).
+        - Particle positions and weights dumped for the `high_gamma` subset.
+    ```
+    begin:subset
+        name = high_gamma
+        gamma_min = 50
+        include_species:electron
+    end:subset
+    ```
     '''
     # make output directory
     if out_dir is None:
@@ -331,3 +367,116 @@ def plot_charge(
     )
     
     plt.close()
+    
+    
+    
+def plot_a0(
+    sup_dir,
+    cpw_x,
+    lambda0=800e-9,
+    out_dir=None,
+    figsize=(8, 4.5),
+    dpi=200
+):
+    '''Plot dimensionless laser amplitude.
+    
+    Parameters
+    ----------
+    sup_dir : str
+        Path to the simulation super directory. The simulation dumps shouyld be
+        in here.
+    cpw_x : int
+        Cells per laser central wavelength in the x-direction. E.g. if laser
+        wavelength is 800 nm and cell size if 40 nm, cpw_x = 20.
+    lambda0 : float, optional
+        Laser central wavelength in SI units. Defaults to 800e-9.
+    out_dir : str, optional
+        Path to output directory within which to save the plot. Defaults to
+        None, which saves to <sup_dir>/analysis/average_electron_energy/.
+    figsize : tuple, optional
+        Figure size in the form (width, height). Changing this parameter may
+        result in a bad plot layout. Defaults to (8, 4.5).
+    dpi : int, optional
+        Dots per inch resolution. Changing this parameter may result in a bad
+        plot layout. Defaults to 200.
+    
+    Input deck requirements
+    -----------------------
+    In addition to base requirements:
+        - poynting_flux.
+    '''
+    # make output directory
+    if out_dir is None:
+        out_dir = os.path.join(sup_dir, "analysis", "a0")
+        print("Output directory not specified")
+        print(f"Defaulting to {out_dir}")
+    if not os.path.isdir(out_dir):
+        print(f"Making output directory at {out_dir}")
+        os.makedirs(out_dir)
+    
+    # get and order sdf files
+    sim_files = []
+    for file in os.listdir(sup_dir):
+        if file.endswith('.sdf'):
+            sim_files.append(file)
+    sim_files.sort()
+    
+    # initialise lists for storing values
+    t = np.zeros(
+        (len(sim_files), ),
+        dtype=np.float64
+    )  # dump time stamps
+    a0 = np.zeros(
+        (len(sim_files), ),
+        dtype=np.float64
+    )  # laser a0
+    
+    # loop over data files to perform measurements
+    for i, f in enumerate(sim_files):
+        data = sdf.read(os.path.join(sup_dir, f))
+        
+        # lineout of x-directional Poynting flux
+        s = data.Derived_Poynting_Flux_x.data.T.shape[0]
+        Px = data.Derived_Poynting_Flux_x.data.T[s//2, :]
+        
+        # moving average with window size equal to cells per wavelength
+        Px_ma = np.convolve(Px, np.ones(cpw_x), 'valid') / cpw_x
+
+        # peak intensity
+        I0 = Px_ma.max()
+        
+        # a0 = 0.855 * lambda0 [micron] * sqrt(I [10^18 W/cm^2])
+        a0[i] = 0.855 * lambda0 * 1e6 * np.sqrt(I0 * 1e-22)
+        
+        t[i] = data.Header['time']
+    
+    # calculate some orders of magnitude    
+    t_max_oom = int(np.floor(np.log10(t.max())))
+    a0_max_plot = a0.max() * 1.1
+    a0_max_plot_oom = int(np.floor(np.log10(a0_max_plot)))
+    a0_max_plot /= 10.0 ** a0_max_plot_oom
+
+    # plot
+    fig = plt.figure(figsize=figsize, dpi=dpi)
+    ax = fig.add_subplot()
+    ax.plot(
+        t/10.0**t_max_oom,
+        a0/10.0**a0_max_plot_oom
+    )
+    ax.grid()
+    ax.set_xlim(t.min()/10.0**t_max_oom, t.max()/10.0**t_max_oom)
+    ax.set_ylim(0, a0_max_plot)
+    ax.set_xlabel(r'$t$ ($\times$' + f'$10 ^ {{{t_max_oom}}}$' + ' s)')
+    ax.set_ylabel(r'$a_0$ ($\times$' + f'$10 ^ {{{a0_max_plot_oom}}}$' + ')')
+    
+    fig.tight_layout()
+    
+    fig.savefig(
+        os.path.join(out_dir, "a0.png"),
+        dpi=dpi
+    )
+    
+    plt.close()
+    
+    
+    
