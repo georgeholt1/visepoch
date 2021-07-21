@@ -18,5 +18,8 @@ The modules are available via Python. Documentation is accessed via the docstrin
 - Pip packages: palettable
 - EPOCH SDF utilities.
 
+## Limitations
+- Currently only works with 2D EPOCH data.
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

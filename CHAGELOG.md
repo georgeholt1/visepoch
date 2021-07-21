@@ -3,6 +3,7 @@
 ## [Unreleased]
 - Animated number density and other info.
 - Animated comparison plot.
+- Support for 3D simulations.
 
 ## [0.1.0]
 ### Added
