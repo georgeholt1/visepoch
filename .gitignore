@@ -157,8 +157,10 @@ cython_debug/
 # -------------------------------
 # package-specific
 
-build_env.sh
+build_*env.sh
 envs/
 tests_dev/
 jupyter_notebooks_dev/
 *.old.*
+docs/
+test.py

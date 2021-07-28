@@ -3,7 +3,9 @@
 A Python 3 package for visualising [EPOCH](https://github.com/Warwick-Plasma/epoch) laser wakefield acceleration simulation results.
 
 ## Installation
-- Clone this repository.
+While this package is not yet available on pip, it can still be used by following these steps:
+
+- Clone this repository or download a release file.
 - Set up conda environment using the `visepoch_conda_environment.yml` file (see, for example, the [conda environment documentation](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file)).
 - Activate the environment.
 - Install EPOCH SDF utilities (`make sdfutils` from an EPOCH directory).

@@ -5,6 +5,10 @@
 - Animated comparison plot.
 - Support for 3D simulations.
 
+## [0.2.0]
+### Changed
+- Refactor of code. Introduced Simulation class. All plotting and analysis functions are now methods.
+
 ## [0.1.0]
 ### Added
 - Animated number density.
