@@ -1,9 +1,14 @@
 # Author: George K. Holt
 # License: MIT
 # Version: 0.2.0
-"""Part of VISEPOCH.
+"""
+_plot.py
+========
 
-Contains functions for plotting.
+Part of VISEPOCH.
+
+Contains functions for plotting.  These should not be accessed directly as they
+are imported by the Simulation class.
 """
 import matplotlib.pyplot as plt
 import os
@@ -23,7 +28,7 @@ from ._utils import calculate_oom, create_outdir, save_or_show
 ################################################################################
 
 def get_mpl_style(mpl_style):
-    '''Return path to matplotlib style sheet.'''
+    """Return path to matplotlib style sheet."""
     if mpl_style == 'default':
         mpl_stylesheet_path = os.path.join(
             os.path.split(__file__)[0],
@@ -47,23 +52,25 @@ def plot_electron_energy_avg_std(
     mpl_style='default',
     energy_units='eV',
 ):
-    '''Create plot of average electron energy against time.
+    """Create plot of average electron energy against time.
     
     Parameters
     ----------
     savefig : bool, optional
-        Whether to save the plot (True) or show it (False). Defaults to False.
+        Whether to save the plot (``True``) or show it (``False``). Defaults to
+        ``False``.
     out_dir : str, optional
-        Output directory within which to save the plot. Only used if savefig is
-        True. Defaults to None which saves to a directory called visepoch
-        created under the simulation directory.
+        Output directory within which to save the plot. Only used if `savefig`
+        is ``True``. Defaults to ``None`` which saves to a directory called
+        'visepoch' created under the simulation directory.
     mpl_style : str, optional
-        Either 'default', which uses the visepoch matplotlib style, or a path to
-        a matplotlib style sheet. Using a non-default style will likely break
-        the plot. Defaults to 'default'.
-    energy_units : str, optional
-        Units to plot energy in. One of ['eV', 'J']. Defaults to 'eV'.
-    '''
+        Either ``'default'``, which uses the visepoch matplotlib style, or a
+        path to a matplotlib style sheet. Using a non-default style will likely
+        break the plot. Defaults to ``'default'``.
+    energy_units : {'eV', 'J'}
+        Units to plot energy in. One of ``['eV', 'J']``. Defaults to
+        ``'eV'``.
+    """
     # check if data is available
     if self.electron_energy_avg_std is None:
         raise RuntimeError("No average and standard deviation electron energy "
@@ -134,21 +141,22 @@ def plot_electron_charge(
     out_dir=None,
     mpl_style='default'
 ):
-    '''Create plot of electron charge against time.
+    """Create plot of electron charge against time.
     
     Parameters
     ----------
     savefig : bool, optional
-        Whether to save the plot (True) or show it (False). Defaults to False.
+        Whether to save the plot (``True``) or show it (``False``). Defaults to
+        ``False``.
     out_dir : str, optional
-        Output directory within which to save the plot. Only used if savefig is
-        True. Defaults to None which saves to a directory called visepoch
-        created under the simulation directory.
+        Output directory within which to save the plot. Only used if `savefig`
+        is ``True``. Defaults to ``None`` which saves to a directory called
+        'visepoch' created under the simulation directory.
     mpl_style : str, optional
-        Either 'default', which uses the visepoch matplotlib style, or a path to
-        a matplotlib style sheet. Using a non-default style will likely break
-        the plot. Defaults to 'default'.
-    '''
+        Either ``'default'``, which uses the visepoch matplotlib style, or a
+        path to a matplotlib style sheet. Using a non-default style will likely
+        break the plot. Defaults to ``'default'``.
+    """
     # check if data is available
     if self.electron_charge is None:
         raise RuntimeError("No electron charge data")
@@ -194,24 +202,25 @@ def plot_electron_energy_spectrum(
     out_dir=None,
     mpl_style='default'
 ):
-    '''Create plot of electron energy spectrum against time.
+    """Create plot of electron energy spectrum against time.
     
     Parameters
     ----------
-    energy_units : str, optional
-        Units to plot the energy axis in. One of `('gamma', 'eV')`. Defaults to
-        `'gamma'`.
+    energy_units : {'gamma', 'eV'}
+        Units to plot the energy axis in. One of ``('gamma', 'eV')``. Defaults
+        to ``'gamma'``.
     savefig : bool, optional
-        Whether to save the plot (True) or show it (False). Defaults to False.
+        Whether to save the plot (``True``) or show it (``False``). Defaults to
+        ``False``.
     out_dir : str, optional
-        Output directory within which to save the plot. Only used if savefig is
-        True. Defaults to None which saves to a directory called visepoch
-        created under the simulation directory.
+        Output directory within which to save the plot. Only used if `savefig`
+        is ``True``. Defaults to ``None`` which saves to a directory called
+        'visepoch' created under the simulation directory.
     mpl_style : str, optional
-        Either 'default', which uses the visepoch matplotlib style, or a path to
-        a matplotlib style sheet. Using a non-default style will likely break
-        the plot. Defaults to 'default'.
-    '''
+        Either ``'default'``, which uses the visepoch matplotlib style, or a
+        path to a matplotlib style sheet. Using a non-default style will likely
+        break the plot. Defaults to ``'default'``.
+    """
     # check if data is available
     if self.electron_energy_spectrum is None:
         raise RuntimeError("No electron spectrum data")
@@ -279,21 +288,22 @@ def plot_laser_a0(
     out_dir=None,
     mpl_style='default'
 ):
-    '''Create a plot of laser dimensionless amplitude against time.
+    """Create a plot of laser dimensionless amplitude against time.
     
     Parameters
     ----------
     savefig : bool, optional
-        Whether to save the plot (True) or show it (False). Defaults to False.
+        Whether to save the plot (``True``) or show it (``False``). Defaults to
+        ``False``.
     out_dir : str, optional
-        Output directory within which to save the plot. Only used if savefig is
-        True. Defaults to None which saves to a directory called visepoch
-        created under the simulation directory.
+        Output directory within which to save the plot. Only used if `savefig`
+        is ``True``. Defaults to ``None`` which saves to a directory called
+        'visepoch' created under the simulation directory.
     mpl_style : str, optional
-        Either 'default', which uses the visepoch matplotlib style, or a path to
-        a matplotlib style sheet. Using a non-default style will likely break
-        the plot. Defaults to 'default'.
-    '''
+        Either ``'default'``, which uses the visepoch matplotlib style, or a
+        path to a matplotlib style sheet. Using a non-default style will likely
+        break the plot. Defaults to ``'default'``.
+    """
     # check if data is available
     if self.laser_a0 is None:
         raise RuntimeError("No laser a0 data")
@@ -346,35 +356,37 @@ def plot_back_of_bubble_helper(
     out_dir=None,
     mpl_style='default',
 ):
-    '''Create plots of the plasma number density and calculated back of the
+    """Create plots of the plasma number density and calculated back of the
     bubble position for every dump.
     
     This is useful for determining the valid time range for
-    `calculate_back_of_bubble_position_velocity`.
+    :meth:`visepoch.simulation.Simulation.calculate_back_of_bubble_position_velocity`.
     
     Parameters
     ----------
     n0 : float, optional
         Background plasma density used to define the minimum separation between
-        roots. Either this or `min_sep` must be specified. Defaults to None.
+        roots. Either this or `min_sep` must be specified. Defaults to ``None``.
     min_sep : float, optional
         Minimum separation between roots in SI units. Either this or `n0` must
-        be specified. Defaults to None.
+        be specified. Defaults to ``None``.
     out_dir : str, optional
-        Output directory within which to save the plot. Only used if savefig is
-        True. Defaults to None which saves to a directory called visepoch
-        created under the simulation directory.
+        Output directory within which to save the plot. Only used if `savefig`
+        is ``True``. Defaults to ``None`` which saves to a directory called
+        'visepoch' created under the simulation directory.
     mpl_style : str, optional
-        Either 'default', which uses the visepoch matplotlib style, or a path to
-        a matplotlib style sheet. Using a non-default style will likely break
-        the plot. Defaults to 'default'.
+        Either ``'default'``, which uses the visepoch matplotlib style, or a
+        path to a matplotlib style sheet. Using a non-default style will likely
+        break the plot. Defaults to ``'default'``.
     
-    Input deck requirements
-    -----------------------
-    - x-directional electric field.
-    - Poynting flux.
-    - Electron number density.
-    '''
+    Notes
+    -----
+    
+    | Input deck requirements:
+    | - ``Ex = always``
+    | - ``poynting_flux = always``
+    | - ``number_density = always + species``
+    """
     bob_x_temp, bob_v_temp, t_mid_temp = \
         self.calculate_back_of_bubble_position_velocity(
             n0=n0, min_sep=min_sep, force=True, set_var=False
@@ -441,21 +453,22 @@ def plot_back_of_bubble_velocity(
     out_dir=None,
     mpl_style='default'
 ):
-    '''Create plot of back of the bubble velocity against time.
+    """Create plot of back of the bubble velocity against time.
     
     Parameters
     ----------
     savefig : bool, optional
-        Whether to save the plot (True) or show it (False). Defaults to False.
+        Whether to save the plot (``True``) or show it (``False``). Defaults to
+        ``False``.
     out_dir : str, optional
-        Output directory within which to save the plot. Only used if savefig is
-        True. Defaults to None which saves to a directory called visepoch
-        created under the simulation directory.
+        Output directory within which to save the plot. Only used if `savefig`
+        is ``True``. Defaults to ``None`` which saves to a directory called
+        'visepoch' created under the simulation directory.
     mpl_style : str, optional
-        Either 'default', which uses the visepoch matplotlib style, or a path to
-        a matplotlib style sheet. Using a non-default style will likely break
-        the plot. Defaults to 'default'.
-    '''
+        Either ``'default'``, which uses the visepoch matplotlib style, or a
+        path to a matplotlib style sheet. Using a non-default style will likely
+        break the plot. Defaults to ``'default'``.
+    """
     # check if data is available
     if self.back_of_bubble_velocity is None:
         raise RuntimeError("No back of the bubble data")

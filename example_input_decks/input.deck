@@ -1,0 +1,145 @@
+begin:constant
+
+    # plasma
+    # ------
+    
+        n0 = 1e25
+        plateau_length = 300 * micro
+        
+        omega_p = qe * sqrt(n0 / (epsilon0 * me))  # plasma frequency
+        lambda_p = 2 * pi * c / omega_p            # plasma wavelength
+        k_p = 2 * pi / lambda_p                    # plasma wavenumber
+        
+    # laser
+    # -----
+    
+        a0 = 4.0                 # dimensionless amplitude
+        w0 = 2 * sqrt(a0) / k_p  # intensity beam waist (1/e^2 radius)
+        tau = 25 * femto         # intensity FWHM duration
+        lambda0 = 800 * nano     # wavelength
+        
+        T_centre = 2.5 * tau                          # time-centre of pulse on xmin boundary
+        I0 = (a0 / 0.855 / lambda0 / 1e6) ^ 2 * 1e18  # peak intensity (W/cm^2)
+
+        # laser focus stuff
+        x_spot = abs(x_min)                        # distance from x_min to focal spot
+        x_R = pi * w0 ^ 2 / lambda0                # Rayleigh range
+        RC = x_spot * (1 + (x_R / x_spot) ^ 2)     # radius of curvature on x_min
+        w_bnd = w0 * sqrt(1 + (x_spot / x_R) ^ 2)  # spot size at x_min
+        gouy = atan(x_spot / x_R)                  # Gouy phase shift at x_min
+        
+        
+    # simulation
+    # ----------
+    
+        cpw_x = 20         # cells per laser wavelength in x
+        cpw_y = 8          # cells per laser wavelength in y
+        ppc = 2            # particles per cell
+        xmin = -80e-6      # initial coordinate of x_min
+        diag_dist = 20e-6  # distance between dumps
+        
+        xmax = 2 * abs(xmin) + plateau_length               # simulation ends when this point is reached
+        xwindow = 5 * tau * c + 2 * lambda_p                # length of window in x
+        window_start = T_centre + xwindow / c - 2.5 * tau   # window starts moving at this time
+        ymin = -2.5 * w0
+        ymax = -ymin
+        ywindow = ymax - ymin
+
+end:constant
+
+
+
+begin:control
+
+    nx = nint(xwindow / lambda0 * cpw_x)
+    ny = nint(ywindow / lambda0 * cpw_y)
+    
+    t_end = window_start + (xmax - xmin) / c
+    
+    x_min = xmin
+    x_max = xmin + xwindow
+    y_min = ymin
+    y_max = ymax
+    
+    stdout_frequency = 100
+
+end:control
+
+
+
+begin:boundaries
+
+    bc_x_min = simple_laser
+    bc_x_max = simple_outflow
+    bc_y_min = simple_outflow
+    bc_y_max = simple_outflow
+
+end:boundaries
+
+
+
+begin:window
+
+    move_window = T
+    window_v_x = c
+    window_start_time = window_start
+    bc_x_min_after_move = simple_outflow
+    
+end:window
+
+
+
+begin:species
+
+    name = electron
+    charge = -1.0
+    mass = 1.0
+    
+    nparticles_per_cell = ppc
+    
+    number_density = 0
+    number_density = if(x gt 0, n0, number_density(electron))
+    number_density = if(x gt plateau_length, 0, number_density(electron))
+    
+end:species
+
+
+
+begin:laser
+
+    boundary = x_min
+    intensity_w_cm2 = I0
+    lambda = lambda0
+    t_profile = gauss(time, T_centre, tau / 2 / sqrt(loge(2)) * sqrt(2))
+    phase = 2.0 * pi / lambda0 * y ^ 2 / (2 * RC) - gouy
+    profile = gauss(y, 0, w_bnd)
+    pol = 90
+
+end:laser
+
+
+
+begin:subset
+
+    name = high_gamma
+    gamma_min = 50
+    include_species:electron
+    
+end:subset
+
+
+
+begin:output
+
+    dt_snapshot = diag_dist / c
+    
+    particles = high_gamma
+    particle_energy = high_gamma
+    particle_weight = high_gamma
+    
+    grid = always
+    ex = always
+    number_density = always + species
+    poynting_flux = always
+    
+end:output

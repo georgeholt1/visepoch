@@ -162,5 +162,9 @@ envs/
 tests_dev/
 jupyter_notebooks_dev/
 *.old.*
-docs/
+docs/_build
+docs/_static
+docs/_template
+docs/make.bat
 test.py
+todo.txt
