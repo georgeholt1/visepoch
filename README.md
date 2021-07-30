@@ -12,7 +12,7 @@ While this package is not yet available on pip, it can still be used by followin
 - Locally install the package by running `pip install -e .` from the repository directory.
 
 ## Usage
-The modules are available via Python. Documentation is accessed via the docstrings.
+Objects and routines are available via a Python interpreter. See the documentation on [Read the Docs](https://visepoch.readthedocs.io) or build it from source (see `README.md` in the `docs` directory).
 
 ## Requirements
 - Python 3.8
