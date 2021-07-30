@@ -1,10 +1,10 @@
 # Author: George K. Holt
 # License: MIT
-# Version: 0.1.0
 """
-Part of VISFBPIC.
+laser_contour_cdict.py
+======================
 
-Custom colour map for laser contours.
+Part of VISFBPIC. Custom colour map for laser contours.
 """
 from matplotlib.colors import LinearSegmentedColormap
 cdict = {

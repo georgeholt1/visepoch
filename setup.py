@@ -1,5 +1,4 @@
 import setuptools
-from visepoch import __version__
 
 with open("README.md", "r") as f:
     long_description = f.read()
@@ -8,7 +7,7 @@ with open("requirements.txt", "r") as f:
 
 setuptools.setup(
     name="visepoch",
-    version=__version__,
+    version='0.2.1',
     author="George K. Holt",
     description="A package for visualising EPOCH results",
     long_description=long_description,

@@ -1,10 +1,10 @@
 # Author: George K. Holt
 # License: MIT
-# Version: 0.1.0
 """
-Part of VISFBPIC.
+cmaps.py
+========
 
-A colormap.
+Part of VISFBPIC. A colormap.
 """
 import palettable
 

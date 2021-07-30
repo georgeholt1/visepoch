@@ -13,7 +13,15 @@
 import os
 import sys
 import sphinx_rtd_theme
-sys.path.insert(0, os.path.abspath('..visepoch/'))
+
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
+
+# The following is necessary for compilation on Read the Docs
+autodoc_mock_imports = [
+    'numpy', 'scipy.constants', 'matplotlib', 'sdf', 'matplotlib.pyplot',
+    'scipy'
+]
 
 
 # -- Project information -----------------------------------------------------
