@@ -6,7 +6,7 @@ A Python 3 package for visualising [EPOCH](https://github.com/Warwick-Plasma/epo
 While this package is not yet available on pip, it can still be used by following these steps:
 
 - Clone this repository or download a release file.
-- Set up conda environment using the `visepoch_conda_environment.yml` file (see, for example, the [conda environment documentation](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file)).
+- Set up conda environment using the `visepoch_conda_environment.yml` file (see, for example, the [conda environment documentation](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file)). The dependencies are also listed in the `requirements.txt` file in the repository root directory, should you wish to configure your own environment.
 - Activate the environment.
 - Install EPOCH SDF utilities (`make sdfutils` from an EPOCH directory).
 - Locally install the package by running `pip install -e .` from the repository directory.
@@ -16,8 +16,7 @@ The modules are available via Python. Documentation is accessed via the docstrin
 
 ## Requirements
 - Python 3.8
-- Conda packages: numpy, scipy, matplotlib, tqdm, ipython
-- Pip packages: palettable
+- Requirements listed in `requirements.txt`.
 - EPOCH SDF utilities.
 
 ## Limitations

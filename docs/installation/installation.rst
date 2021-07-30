@@ -8,6 +8,8 @@ source.
 #. Set up and activate the conda environment using the supplied
    ``visepoch_conda_environment.yml`` file. See the `conda environment
    documentation <https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file>`_.
+   The dependencies are also listed in the ``requirements.txt`` file in the
+   repository root directory, should you wish to configure your own environment.
 #. Install the EPOCH SDF utilities by following the steps in the EPOCH manual.
    This is typically done with ``make sdfutils`` in one of the ``epoch``
    directories.

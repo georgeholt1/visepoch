@@ -1,6 +1,5 @@
 # Author: George K. Holt
 # License: MIT
-# Version: 0.2.0
 """
 _data.py
 ========
